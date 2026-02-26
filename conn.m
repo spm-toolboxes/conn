@@ -1076,6 +1076,8 @@ else
                         end
                         CONN_x=vars.CONN_x;
                         clear vars;
+                        [nill,nill,fext]=fileparts(basefilename);
+                        if isempty(fext), basefilename=conn_prepend('',basefilename,'.mat'); end
                     end
                     folderchanged{1}=fileparts(CONN_x.filename);
                     folderchanged{2}=fileparts(errstr);
@@ -1158,6 +1160,11 @@ else
                 end
                 CONN_x.lastver=connver; 
                 CONN_x.isready(1)=1;
+                try
+                    if CONN_x.pobj.isextended, conn_disp('fprintf','loaded extension of %s\n',CONN_x.filename); 
+                    else conn_disp('fprintf','loaded %s\n',CONN_x.filename); 
+                    end
+                end
             end
 			
         case {'load-readonly','load-viewonly'}
@@ -1547,7 +1554,7 @@ else
                             open(fname);
                         end
                     catch
-                        url='http://www.conn-toolbox.org/resources/conn-documentation/manual';
+                        url='https://web.conn-toolbox.org/resources/conn-manual/manual';
                         if isequal('Visit',conn_questdlg({sprintf('Unable to display file %s',fname),'Would you like to visit CONN documentation site?',sprintf('(%s)',url)},'Error','Visit','Cancel','Visit')), web(url,'-browser'); end
                     end
                 case 'help'

@@ -5,7 +5,7 @@ function varargout=conn_module(option,varargin)
 %
 % Current module names: PREP, GLM, EL, FL
 %
-%    PREP : runs CONN preprocessing pipeline on user-defined data (see www.conn-toolbox.org/resources/prep for details)
+%    PREP : runs CONN preprocessing pipeline on user-defined data (see conn-toolbox.org/resources/conn-extensions/prep for details)
 %
 %       basic syntax: conn_module preprocessing
 %       advanced syntax: conn_module('PREP', fieldname1, fieldvalue1, fieldname2, fieldvalue2, ...)
@@ -35,7 +35,7 @@ function varargout=conn_module(option,varargin)
 %
 %       See https://web.conn-toolbox.org/resources/conn-extensions/prep for additional options
 %
-%    GLM : runs CONN second-level analyses on user-defined data (see www.conn-toolbox.org/resources/glm for details)
+%    GLM : runs CONN second-level analyses on user-defined data (see www.conn-toolbox.org/resources/conn-extensions/glm for details)
 %
 %       basic syntax: conn_module GLM
 %       advanced syntax: conn_module('GLM', fieldname1, fieldvalue1, fieldname2, fieldvalue2, ...)
@@ -92,7 +92,7 @@ function varargout=conn_module(option,varargin)
 %    EL : runs EvLab (evlab.mit.edu) fMRI pipeline for subject-centric task-activation analyses
 %       See https://web.conn-toolbox.org/resources/conn-extensions/el for descriptiona and options
 % 
-%    FL : runs FrankLab (sites.bu.edu/guentherlab) fMRI pipeline for group-centric task-activation analyses (see www.conn-toolbox.org/resources/franklab for details)
+%    FL : runs FrankLab (sites.bu.edu/guentherlab) fMRI pipeline for group-centric task-activation analyses (see www.conn-toolbox.org/resources/conn-extensions/franklab for details)
 %       See https://web.conn-toolbox.org/resources/conn-extensions/fl for description and options
 % 
 %    Additional functionality: conn_module('get',...)

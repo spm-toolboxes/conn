@@ -22,7 +22,7 @@ end
 warning('off','MATLAB:print:CustomResizeFcnInPrint');
 warning('off','MATLAB:print:ExcludesUIInFutureRelease');
 %try, if ~isequal(get(hfig,'windowstate'),'normal'), set(hfig,'windowstate','normal','position',get(hfig,'position')); drawnow; end; end % note: temporal fix to avoid issues with maximized windows in latest Matlab versions
-set(hfig,'inverthardcopy','off');
+%set(hfig,'inverthardcopy','off');
 units=get(hfig,{'units','paperunits'});
 set(hfig,'units','points');
 set(hfig,'paperunits','points','paperpositionmode','manual','paperposition',get(hfig,'position'));

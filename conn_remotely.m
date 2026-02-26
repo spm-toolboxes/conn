@@ -36,7 +36,7 @@ function varargout=conn_remotely(option,varargin)
 % Installation in the 'client' computer simply requires the standard installation of SPM/CONN.
 %
 % If the 'host' computer is part of a HPC or cluster environment, see
-%    www.conn-toolbox.org/resources/cluster-configuration
+%    https://web.conn-toolbox.org/resources/hpc-configuration
 % for additional HPC/cluster installation instructions. While optional, setting up CONN's cluster/HPC
 % configuration in your 'host' computer allows CONN_REMOTELY to also submit jobs to your cluster remotely
 % (jobs submitted from the 'client' computer which will be run in the local network of the 'host' computer).
