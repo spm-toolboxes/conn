@@ -2012,7 +2012,7 @@ if any(options==7) && any(CONN_x.Setup.steps([1,2,4])) && ~(isfield(CONN_x,'gui'
             save(filename,'data','names','xyz','source','crop','data_sessions',   'conditionsweights','conditionsnames','conditionsnamesvalid');
             if isfield(CONN_x.Setup,'outputfiles')&&numel(CONN_x.Setup.outputfiles)>=7&&CONN_x.Setup.outputfiles(7), % create confound-corrected ROI file
                 outputfilename=fullfile(filepathresults,['dROI_Subject',num2str(nsub,'%03d'),'.csv']);
-                enames=cellfun(@(nroi)arrayfun(@(n)sprintf('%s_%d',names{nroi},n),1:size(data{nroi},2),'uni',0),1:numel(data),'uni',0);
+                enames=arrayfun(@(nroi)arrayfun(@(n)sprintf('%s_%d',names{nroi},n),1:size(data{nroi},2),'uni',0),1:numel(data),'uni',0);
                 conn_savetextfile(outputfilename,round(cat(2,data_sessions,data{:}),8),[{'SessionNumber'},cat(2,enames{:})]);
             end
         end
