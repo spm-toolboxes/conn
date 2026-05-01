@@ -81,7 +81,7 @@ if ~nargin||isequal(option,'?')
             answ(1)=cellfun(@str2num,answ(1),'uni',0);
             ocov=conn_convertl12l1covariate('FD_power',answ{:});
         case opts{4}, % scrubbing
-            fields={'Threshold values for each input covariate timeseries (e.g. [9 2] liberal; [5 0.9] intermediate; [3 0.5] conservative)','Window-size around each supra-threshold value (scans, e.g. 1) (optionally enter three values: [Nbefore,Nafter,Ninitial], e.g. [1,1,0] is equivalent to 1)','Name of input first-level covariate(s)','Name of output first-level covariate'};
+            fields={'Threshold for each input covariate (e.g. [9 2] liberal; [5 0.9] intermediate; [3 0.5] conservative)','Window-size around each supra-threshold value (scans, e.g. 1) (optionally enter three values: [Nbefore,Nafter,Ninitial], e.g. [1,1,0] is equivalent to 1)','Name of input first-level covariate(s)','Name of output first-level covariate'};
             values={'[5 0.9]','1','QC_timeseries','scrubbing'};
             answ=conn_menu_inputdlg(fields,'scrubbing options',1,values,struct('Resize','on'));
             if numel(answ)~=numel(fields)||isempty(answ{1}),return; end
@@ -268,12 +268,17 @@ switch(lower(option))
                 end
                 if isempty(data), conn_disp('__nolog','fprintf','warning: missing %s data for subject %d session %d\n',sprintf('%s ',icov{:}),nsub,nses); data=zeros(1,numel(thr)); end
                 idx=find(any(data>repmat(thr(:)',size(data,1),1),2));
-                if numel(ext)>=2&&any(ext(1:2)>0), idx=repmat(idx(:),1,sum(ext(1:2)))+repmat(-ext(1):ext(2)-1,numel(idx),1); 
-                elseif ext>0, idx=repmat(idx(:),1,2*ext)+repmat(-ext:ext-1,numel(idx),1); 
+                if isequal(icov,{'QC_timeseries'})&&size(data,2)==2, score=max(data./repmat([3 .5],size(data,1),1),[],2);
+                elseif all(thr(:)>0), score=max(data./repmat(thr(:)',size(data,1),1),[],2);
+                else score=max(data,[],2);
                 end
-                if numel(ext)>2, idx=[(1:ext(3))';idx(:)]; end % label first ext(3) scans
+                if numel(ext)>=2&&any(ext(1:2)>0), idx=repmat(idx(:),1,sum(ext(1:2)))+repmat(-ext(1):ext(2)-1,numel(idx),1); for k=[-ext(1):-1, 1:ext(2)-1], score=max(score,score(max(1,min(numel(score),k+(1:numel(score))')))); end
+                elseif ext>0, idx=repmat(idx(:),1,2*ext)+repmat(-ext:ext-1,numel(idx),1); for k=[-ext:-1, 1:ext-1], score=max(score,score(max(1,min(numel(score),(1:numel(score))'-k)))); end
+                end
+                if numel(ext)>2, idx=[(1:ext(3))';idx(:)]; score(1:ext(3))=inf; end % label first ext(3) scans
                 idx=unique(idx(idx>0&idx<=size(data,1)));
-                e=full(sparse(idx,1:numel(idx),1,size(data,1),numel(idx)));
+                [nill,idxscore]=sort(score(idx),'descend'); idxscore(idxscore)=1:numel(idx);
+                e=full(sparse(idx,idxscore,1,size(data,1),numel(idx)));
                 if isnumeric(filename)
                     out=e;
                     R=e; 

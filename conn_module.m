@@ -108,7 +108,7 @@ function varargout=conn_module(option,varargin)
 %
 %
 %    --------------------
-%    PredictiveModel : runs CONN second-level connectome predictive model on user-defined data
+%    PredictiveModel (CPM) : runs CONN second-level connectome predictive model on user-defined data
 %
 %       basic syntax: 
 %          conn_module PredictiveModel create <modelname>            : creates a model named <modelname> from training data

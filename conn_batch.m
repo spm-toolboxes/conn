@@ -778,6 +778,7 @@ if isfield(batch,'Setup'),
     end
     if isfield(batch.Setup,'RT')&&~isempty(batch.Setup.RT),CONN_x.Setup.RT(SUBJECTS)=batch.Setup.RT;
     elseif isfield(batch.Setup,'rt')&&~isempty(batch.Setup.rt),CONN_x.Setup.RT(SUBJECTS)=batch.Setup.rt;
+    elseif isfield(batch.Setup,'TR')&&~isempty(batch.Setup.TR),CONN_x.Setup.RT(SUBJECTS)=batch.Setup.TR;
     end
     if isfield(batch.Setup,'acquisitiontype')&&~isempty(batch.Setup.acquisitiontype),
         CONN_x.Setup.acquisitiontype=1+(batch.Setup.acquisitiontype~=1);

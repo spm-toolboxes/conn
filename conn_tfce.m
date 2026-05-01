@@ -12,10 +12,15 @@ function [S,P,Q,I]=conn_tfce(h,varargin)
 %    'E'      : extent function exponent (default 0.5)
 %    'H'      : intensity function exponent (default 2)
 %    'Hmin'   : integration lower limit (default 0)
+%    'adjacency': data topology -defining which elements of h are connected- ('volume', 'full', 'network', or an explicit adjacency matrix; default 'volume')
+%                   'volume' is used when h is an image and two pixels/voxels are considering connected if they are adjacent (connectivity criterion = 2 for vectors, 8 for images, 18 for 3-dimensional h matrices, and 3^D-2^D-1 for higher dimensions)
+%                            set adjacency to 'volume' to use a 18- connectivity criterion for 3D volumes, e.g. for compatibility with SPM's default definition of clusters (see spm_clusters)
+%                            set adjacency to 'full' to use a 26- connectivity criterion for 3D volumes, e.g. for compatibility with FSL's default definition of clusters (3^D-1 for higher dimensions)
+%                   'network' is used when h is a weight- or adjacency- matrix defining a graph, and two edges in that graph are considered connected if they both share a common node (e.g. NBS-TFCE)
+%                   enter explicitly a numel(h)*numel(h) adjacency matrix A to specify other user-defined data topologies
 %
 % Additional information:
 % - integral estimated exactly, no dh discretization/approximation needed (equivalent to lim dh->0 results in other implementations)
-% - connectivity criterion = 2 for vectors, 8 for images, 18 for 3-dimensional h matrices, and 3^D-2^D-1 for higher dimensions (note: for compatibility with spm_clusters)
 % - properties:
 %     conn_tfce(h,'E',0,'H',0) = h
 %     conn_tfce(h,'E',E,'H',0) = conn_tfce(k*h,'E',E,'H',0) / k
@@ -32,13 +37,13 @@ params=struct(...
     'e',.5,...                    % E constant
     'h',2,...                     % H constant
     'hmin',0,...                  % Hmin costant
-    'adjacency',[],...            % connectivity criterion: a) adjacency=[] or adjacency='volume' uses default connectivity criterion; b) adjacency='full' for 3^D-1 connectivity criterion in all cases; c) adjacency=sparse(...,N,N) uses explicit adjacency matrix; or d) adjacency=struct('size',...,'index',...) uses default connectivity criterion with voxels selected from n-dimensional matrix with size "size" and single-index positions "index"
+    'adjacency',[],...            % connectivity criterion
     'removeborders',false);       % true/false: P output (identifying local peaks) does not include border voxels (voxels neighb to x|isnan(h(y)))
 for n1=1:2:numel(varargin)-1, if ~isfield(params,lower(varargin{n1})), error('unknown option %s',lower(varargin{n1})); else params.(lower(varargin{n1}))=varargin{n1+1}; end; end
 
 % resize
 adj=params.adjacency;
-if ischar(adj), adj=lower(adj); assert(ismember(adj,{'full','volume'}),'unrecognized adjacency value %s',adj); end
+if ischar(adj), adj=lower(adj); assert(ismember(adj,{'full','volume','network'}),'unrecognized adjacency value %s',adj); end
 if isequal(adj,'volume'), adj=[]; end
 if isstruct(adj)
     h0=h;
@@ -83,6 +88,7 @@ lastI=0;
 %info=zeros(sh);
 for j=idx(:)'
     if isempty(adj), t=I(j+neighb);
+    elseif isequal(adj,'network'), j1=mod(j-1,sh(1))+1; j2=ceil(j/sh(1)); t=[I(j1,:), I(:,j2)'];
     else t=I(adj(:,j)>0);
     end
     i=C_open(t(t>0));
@@ -122,7 +128,6 @@ for j=idx(:)'
         C_bak(i)=lastI;
     end
 end
-
 
 % backpropagate
 for i=lastI:-1:1

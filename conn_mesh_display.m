@@ -1495,9 +1495,20 @@ if ishandle(hmsg), delete(hmsg); end
                     if isempty(tpVOLother), return; end
                     facecolor=[.5 .5 0];
                 else
-                    [tfilename,tpathname]=conn_fileutils('uigetfile','*.nii; *.img','Select file',fullfile(fileparts(which(mfilename)),'rois'));
-                    if ischar(tfilename), totherVOL=fullfile(tpathname,tfilename);
-                    else return;
+                    answ=conn_questdlg('','Display new surface','Display new surface from MNI-coordinates','Display new surface from file (.nii)','Display new surface from file (.nii)');
+                    if isempty(answ), return; end
+                    if isequal(answ,'Display new surface from MNI-coordinates')
+                        answ={'0 0 0','10'};
+                        answ=conn_menu_inputdlg({'MNI coordinates (mm)','ROI spherical radius (mm)'},'',1,answ);
+                        if numel(answ)~=2, return; end
+                        xyz=str2num(answ{1}); if isempty(xyz), return; end
+                        rad=str2num(answ{2}); if isempty(rad), return; end
+                        [totherVOL,isext]=conn_createmniroi(fullfile(conn_projectmanager('pwd'),'temporalfile_conn_mesh_display_newroi.nii'),xyz,rad,2);
+                    else
+                        [tfilename,tpathname]=conn_fileutils('uigetfile','*.nii; *.img','Select file',fullfile(fileparts(which(mfilename)),'rois'));
+                        if ischar(tfilename), totherVOL=fullfile(tpathname,tfilename);
+                        else return;
+                        end
                     end
                     tpVOLother=conn_surf_volume(totherVOL);
                     if isempty(tpVOLother), return; end

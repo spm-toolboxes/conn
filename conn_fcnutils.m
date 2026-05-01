@@ -75,8 +75,10 @@ switch(lower(option))
         temp(isnan(temp))=0; 
         tempXYZ=[xyz nan(size(xyz,1),20) xyz]';
         if size(temp,1)>512, 
-            temp=temp(round(linspace(1,size(temp,1),512)),:); 
-            tempXYZ=tempXYZ(round(linspace(1,size(temp,1),512)),:);
+            %itemp=round(linspace(1,size(temp,1),512));
+            itemp=round(linspace(1,size(x0,2),256)); itemp=[itemp size(x0,2)+(1:20) itemp+size(x0,2)+20];
+            temp=temp(itemp,:); 
+            tempXYZ=tempXYZ(itemp,:);
         end
 
         %tempA=ind2rgb(round(1+(size(CONN_h.screen.colormap,1)/2-1)*temp),CONN_h.screen.colormap);

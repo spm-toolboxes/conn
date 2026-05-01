@@ -325,6 +325,7 @@ if ~isempty(global_threshold), z_thresh=global_threshold; end
 
 mv_data = [];
 for i = 1:length(M)
+    if size(M{i},2)>6, M{i}=M{i}(:,1:6); end
     mv_data = vertcat(mv_data,M{i});
 end
 

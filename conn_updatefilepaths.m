@@ -129,7 +129,9 @@ if nargin==1,
                                 filename=[];
                                 iscleared=true;
                             else
-                                conn_disp(['conn_updatefilepaths: file ',fullname1,' not found']);
+                                %conn_disp(['conn_updatefilepaths: file ',fullname1,' not found']);
+                                answ=conn_questdlg({sprintf('File %s not found',fullname1),'Please find the new location of this file'},'','Continue','Cancel','Continue');
+                                if ~isequal(answ,'Continue'), filename=[]; break; end
                                 [name2,pathname2]=uigetfile(['*',ext1],['File not found: ',name1,ext1],['*',name1,ext1]);
                                 if all(name2==0), filename=[]; break; end
                                 fullname2=fullfile(pathname2,[name2,num1]);

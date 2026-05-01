@@ -23,8 +23,10 @@ options=struct(...
     'edgecolor','none',...
     'facealpha',1,...
     'markersize',8);
-if numel(varargin)>0, for n=2:2:numel(varargin), assert(isfield(options,varargin{n-1}),'unrecognized option %s',varargin{n-1}); options.(varargin{n-1})=varargin{n}; end; end
+if numel(varargin)>0, for n=2:2:numel(varargin), toptions=fieldnames(options); assert(isfield(options,varargin{n-1}),'unrecognized option %s (valid options %s)',varargin{n-1},sprintf('%s ',toptions{:})); options.(varargin{n-1})=varargin{n}; end; end
 varargout=cell(1,nargout);
+state=rng;
+rng(0,'twister');
 
 if iscell(x), nx=numel(x);
 else nx=size(x,2);
@@ -80,7 +82,7 @@ for nvar=1:nx
         
         if options.centeredsamples, 
             if options.plotsamples, hold on; plot(nvar+options.offset+zeros(numel(ttx),1),sort(ttx(:)),'.','markersize',options.markersize,'markeredgecolor',options.dotcolor,'markerfacecolor',options.dotcolor); hold off; end
-            if options.plotquart, p0=prctile(ttx(:),50); p1=prctile(ttx(:),25);p2=prctile(ttx(:),75); hold on; plot(nvar+options.offset+options.scale*[-1 1 nan -1 1]/2,[p1 p1 nan p2 p2],'--','linewidth',1,'color',options.colors(end,:)); plot(nvar+options.offset+options.scale*[-1 1]/2,[p0 p0],'-','linewidth',1,'color',options.colors(end,:)); hold off; end
+            if options.plotquart, p0=prctile(ttx(:),50); p1=prctile(ttx(:),25);p2=prctile(ttx(:),75); hold on; plot(nvar+options.offset+options.scale*[-1 1 nan -1 1]/2,[p1 p1 nan p2 p2],'--','linewidth',1,'color',.5*options.dotcolor+.5*options.colors(end,:)); plot(nvar+options.offset+options.scale*[-1 1]/2,[p0 p0],'-','linewidth',1,'color',options.colors(end,:)); hold off; end
         else
             if options.plotsamples, 
                 hold on; 
@@ -89,10 +91,10 @@ for nvar=1:nx
                 end
                 hold off;
             end
-            if options.plotquart, p0=prctile(ttx(:),50);p1=prctile(ttx(:),25);p2=prctile(ttx(:),75); hold on; plot(nvar+options.offset+options.scale*1.1*[-1 1 nan -1 1]/2,[p1 p1 nan p2 p2],'-','linewidth',1,'color',options.colors(end,:)); plot(nvar+options.offset+options.scale*1.1*[-1 1]/2,[p0 p0],'-','linewidth',1,'color',options.colors(end,:)); hold off; end
+            if options.plotquart, p0=prctile(ttx(:),50);p1=prctile(ttx(:),25);p2=prctile(ttx(:),75); hold on; plot(nvar+options.offset+options.scale*1.1*[-1 1 nan -1 1]/2,[p1 p1 nan p2 p2],'-','linewidth',1,'color',.5*options.dotcolor+.5*options.colors(end,:)); plot(nvar+options.offset+options.scale*1.1*[-1 1]/2,[p0 p0],'-','linewidth',1,'color',options.colors(end,:)); hold off; end
         end
         if options.plotmeans, hold on; plot(nvar+options.offset,mean(ttx(:)),'wo','markerfacecolor',options.colors(end,:)); hold off; end
-        if options.plotmedians, hold on; plot(nvar+options.offset+options.scale*maxp*[-1 1]/2,median(ttx(:))*[1 1],'-','color',options.dotcolor); hold off; end
+        if options.plotmedians, hold on; plot(nvar+options.offset+options.scale*1.1*[-1 1]/2,median(ttx(:))*[1 1],'-','color',options.dotcolor); hold off; end
         %if options.plotmedians, [nill,idx]=max(pleft); hold on; plot(nvar+options.offset,X(idx),'wo','markerfacecolor',options.colors(end,:)); hold off; end
         drawnow
     end
@@ -102,6 +104,8 @@ if nargout>0
 else
     hold off;
 end
+rng(state);
+
 end
 
 function p=prctile(x,val)
