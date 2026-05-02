@@ -1524,20 +1524,23 @@ if any(option>1)
     Data_SNR=Data_Sum./max(eps,Data_Std);
     if numel(out_idx)>100&&~isempty(hw), close(hw); end
 end
-for noption=1:numel(option)
-    ffilename='';
-    switch option(noption)
-        case 1, b=Mask; filename=['art_mask_',datafiles_name,datafiles_ext]; filetype='uint8'; filedescription='analysis mask';
-        case 2, b=Data_Std; filename=['art_ResStd_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise variability';
-        case 3, b=Mask.*Data_SNR; filename=['art_SNR_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise SNR';
-        case 4, b=Data_Sum; filename=['art_mean_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise mean';
+for nses=1:numel(datafiles)
+    [datafiles_path,datafiles_name,datafiles_ext] = spm_fileparts(datafiles{nses});
+    for noption=1:numel(option)
+        ffilename='';
+        switch option(noption)
+            case 1, b=Mask; filename=['art_mask_',datafiles_name,datafiles_ext]; filetype='uint8'; filedescription='analysis mask';
+            case 2, b=Data_Std; filename=['art_ResStd_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise variability';
+            case 3, b=Mask.*Data_SNR; filename=['art_SNR_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise SNR';
+            case 4, b=Data_Sum; filename=['art_mean_',datafiles_name,datafiles_ext]; filetype='float32'; filedescription='Voxel-wise mean';
+        end
+        V=struct('mat',plotdata.VY1.mat,'dim',plotdata.VY1.dim,'pinfo',[1;0;0],'dt',[spm_type(filetype) spm_platform('bigend')],'descrip',filedescription);
+        if ~isempty(ffilename), V.fname=ffilename;
+        else V.fname=fullfile(output_dir,filename);
+        end
+        spm_write_vol(V,b);
+        art_disp(['New ',filedescription,' file saved to ',V.fname]);
     end
-    V=struct('mat',plotdata.VY1.mat,'dim',plotdata.VY1.dim,'pinfo',[1;0;0],'dt',[spm_type(filetype) spm_platform('bigend')],'descrip',filedescription);
-    if ~isempty(ffilename), V.fname=ffilename;
-    else V.fname=fullfile(output_dir,filename);
-    end
-    spm_write_vol(V,b);
-    art_disp(['New ',filedescription,' file saved to ',V.fname]);
 end
 end
 
