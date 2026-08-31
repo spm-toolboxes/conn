@@ -510,7 +510,10 @@ else
                 x=1+(CONN_MM.MENU{thishandle}.value==n1 & ~CONN_MM.MENU{thishandle}.state(n1))+2*CONN_MM.MENU{thishandle}.state(n1);
                 ximage=CONN_MM.CDATA{thishandle}{n1}{x};
                 if ~CONN_gui.doemphasis3&&CONN_MM.MENU{thishandle}.linkon, 
-                    ximage=max(0,min(1,ximage*1)); ximage=ximage.*repmat(.75+.20*tanh((size(ximage,1):-1:1)/2)'*tanh(min(0:size(ximage,2)-1,size(ximage,2)-1:-1:0)/4),[1,1,size(ximage,3)]); 
+                    if mean(CONN_gui.backgroundcolor)<.5, ximage=.15*ones(size(ximage)); % background color for dropdown menus
+                    else ximage=.85*ones(size(ximage)); 
+                    end
+                    %ximage=max(0,min(1,ximage*1)); ximage=ximage.*repmat(.75+.20*tanh((size(ximage,1):-1:1)/2)'*tanh(min(0:size(ximage,2)-1,size(ximage,2)-1:-1:0)/4),[1,1,size(ximage,3)]); 
                     if 0,%CONN_MM.MENU{thishandle}.order(1)~='h'
                         ximage0=.5+0*round(ximage);
                         if t4(n1)==0, ximagei1=ceil(min(size(ximage,1)*.05,8));
@@ -532,7 +535,7 @@ else
                     end
                 end
                 if ~iscell(CONN_MM.MENU{thishandle}.callback{n1})&&CONN_MM.MENU{thishandle}.order(1)~='h'
-                    try, ximage(round(size(ximage,1)/2)+(1:5),end-16:end-8,:)=.5; end
+                    try, ximage(round(size(ximage,1)/2)+(1:3),end-16:end-8,:)=.5; end
                 end
                 %CONN_MM.MENU{thishandle}.BINDEX(t3(n1)+1:t3(n1+1))=n1;
                 if CONN_MM.MENU{thishandle}.order(1)=='h', pos=[CONN_MM.MENU{thishandle}.position(1)+t4(n1)*CONN_MM.MENU{thishandle}.position(3), CONN_MM.MENU{thishandle}.position(2), CONN_MM.MENU{thishandle}.position(3)*(t4(n1+1)-t4(n1)), CONN_MM.MENU{thishandle}.position(4)];

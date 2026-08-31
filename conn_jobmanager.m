@@ -1485,12 +1485,14 @@ ok=1+handles.finished;
                 else
                     conn_jobmanager('canceljob',info);
                 end
-                if 0,%~donotupdate
-                    filename=regexprep(info.private{1}(1).project,'\?.*$','');
-                    [nill,fname]=fileparts(filename);
-                    if ~isempty(fname)
-                        conn('load',filename);
-                        conn save;
+                if ~donotupdate
+                    try
+                        filename=regexprep(info.private{1}(1).project,'\?.*$','');
+                        [nill,fname]=fileparts(filename);
+                        if ~isempty(fname)
+                            conn('load',filename);
+                            conn save;
+                        end
                     end
                 end
                 set(handles.stopall,'string',tstr);

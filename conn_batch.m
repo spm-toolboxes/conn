@@ -582,6 +582,8 @@ function varargout=conn_batch(varargin)
 % BATCH.dynAnalysis PERFORMS FIRST-LEVEL ANALYSES (dynamic connectivity) %!
 %
 %    dynAnalysis.done               : 1/0: 0 defines fields only; 1 runs ANALYSIS processing steps [0]
+%                                     (note: set dynAnalysis.done_step1only=true if you only want to perform step 1 of these analyses -dynamic model estimation-)
+%                                     (note: set dynAnalysis.done_step2only=true if you only want to perform step 2 of these analyses -backprojection to subject-level circuits-)
 %    dynAnalysis.overwrite          : (for done=1) 1/0: overwrites target files if they exist [1]
 %    dynAnalysis.name               : analysis name (identifying each set of independent analysis)
 %                                     (alternatively sequential index identifying each set of independent analyses [1])
@@ -1688,8 +1690,8 @@ if isfield(batch,'dynAnalysis'),
     if isfield(batch.dynAnalysis,'window'), CONN_x.dynAnalyses(CONN_x.dynAnalysis).window=batch.dynAnalysis.window; end
     
     if isfield(batch.dynAnalysis,'condition'), CONN_x.dynAnalyses(CONN_x.dynAnalysis).condition=batch.dynAnalysis.condition; end
-    if isfield(batch.dynAnalysis,'done_step1only')&&batch.DynAnalysis.done_step1, stepname='Analyses_dyn_step1'; batch.dynAnalysis.done=true;
-    elseif isfield(batch.dynAnalysis,'done_step2only')&&batch.DynAnalysis.done_step1, stepname='Analyses_dyn_step2'; batch.dynAnalysis.done=true;
+    if isfield(batch.dynAnalysis,'done_step1only')&&batch.dynAnalysis.done_step1only, stepname='Analyses_dyn_step1'; batch.dynAnalysis.done=true;
+    elseif isfield(batch.dynAnalysis,'done_step2only')&&batch.dynAnalysis.done_step2only, stepname='Analyses_dyn_step2'; batch.dynAnalysis.done=true;
     else stepname='Analyses_dyn';
     end
     if isfield(batch.dynAnalysis,'done')&&batch.dynAnalysis.done,

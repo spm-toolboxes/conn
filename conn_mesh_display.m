@@ -315,7 +315,7 @@ end
 
 hax0=findobj(0,'type','axes','tag','conn_mesh_display_axes');
 if isempty(hax0)
-    state.handles.hfig=conn_figure('numbertitle','off','color',state.background,'units','norm','position',[.3 .4 .4 .4],'menubar','none','render','opengl','name','rendering, please wait...','colormap',state.colormap,'visible','off');
+    state.handles.hfig=conn_figure('numbertitle','off','color',state.background,'units','norm','position',[.3 .4 .4 .4],'menubar','none','renderer','opengl','name','rendering, please wait...','colormap',state.colormap,'visible','off');
     figname='conn 3d display';
     axes('units','norm','position',[.95 .1 .04 .8]);
     state.handles.fullfigure=true;

@@ -1,4 +1,4 @@
-function varargout=conn_importaseg(filename,filelabels,justchecking)
+function varargout=conn_importaseg(filename,filelabels,justchecking,subsample,outputpath)
 
 global CONN_x;
 if ~nargin
@@ -16,13 +16,16 @@ if ~nargin
     return
 end
 
+if nargin<5||isempty(outputpath), outputpath=[]; end
+if nargin<4||isempty(subsample), subsample=1; end
 if nargin<3||isempty(justchecking), justchecking=false; end
 if nargin<2||isempty(filelabels),  filelabels=fullfile(fileparts(which(mfilename)),'utils','surf','FreeSurferColorLUT.txt'); end
-if ~justchecking&&any(conn_server('util_isremotefile',filename)), varargout={conn_server('run',mfilename,conn_server('util_localfile',filename),filelabels,justchecking)}; return; end
+if ~justchecking&&any(conn_server('util_isremotefile',filename)), varargout={conn_server('run',mfilename,conn_server('util_localfile',filename),filelabels,justchecking,subsample,outputpath)}; return; end
 filename=conn_server('util_localfile',filename);
 
 if conn_fileutils('isdir',filename), filename=fullfile(filename,'aseg.mgz'); end
 [file_path,file_name,file_ext,file_num]=spm_fileparts(filename);
+if ~isempty(outputpath), file_path=outputpath; end
 filenames=arrayfun(@(n)fullfile(file_path,sprintf('c%d_%s.img',n,file_name)),1:3,'uni',0);
 ok1=conn_existfile(filename);
 ok2=ok1&all(cellfun(@(x)conn_existfile(x),filenames));
@@ -62,13 +65,22 @@ else
         Labels={{'Left-Cerebral-Cortex','Right-Cerebral-Cortex'},...
             {'Left-Cerebral-White-Matter','Right-Cerebral-White-Matter'},...
             {'Left-Lateral-Ventricle','Left-Inf-Lat-Vent','3rd-Ventricle','4th-Ventricle','CSF','Right-Lateral-Ventricle','Right-Inf-Lat-Vent','5th-Ventricle'}};
+        regexpLabels={'^ctx-', '^wm-', ''};
         for nreg=1:3,
             [ok,idx]=ismember(Labels{nreg},XYZnames);
             idx=idx(ok);
+            if ~isempty(regexpLabels{nreg}), idx=union(idx,find(cellfun('length',regexp(XYZnames,regexpLabels{nreg}))>0)); end
             b_reg{nreg}=ismember(b,idx);
-            
             V=struct('mat',a.mat,'dim',a.dim,'dt',[spm_type('uint8') spm_platform('bigend')],'fname',filenames{nreg});
-            spm_write_vol(V,b_reg{nreg});
+            temp=b_reg{nreg};
+            if subsample>1 % subsample voxels in each i/j/k dimension (minimum-probability mask erosion)
+                for n=1:3, if rem(size(temp,1),subsample)>0, temp=cat(1,temp,zeros([subsample-rem(size(temp,1),subsample),size(temp,2),size(temp,3)])); end; temp=permute(temp,[2,3,1]); end
+                temp=reshape(temp,subsample,size(temp,1)/subsample,subsample,size(temp,2)/subsample,subsample,size(temp,3)/subsample);
+                temp=permute(mean(mean(mean(double(temp),1),3),5),[2,4,6,1,3,5])>0.5;
+                V.mat=[subsample*V.mat(1:3,1:3), V.mat(1:3,4)-V.mat(1:3,:)*[(subsample-1)/2;(subsample-1)/2;(subsample-1)/2;0]; V.mat(4,:)];
+                V.dim=[size(temp,1),size(temp,2),size(temp,3)];
+            end
+            spm_write_vol(V,temp);
             conn_disp(['Saved file ',V.fname,' (',num2str(nnz(b_reg{nreg})),' voxels)']);
         end
     end

@@ -328,7 +328,7 @@ if nargin<1 || (ischar(varargin{1})&&~isempty(regexp(varargin{1},'^lite$|^isremo
 									'position',[.18,.955-1.5*.035-3*.035,.15,3*.035],...
 									'fontsize',8,...
                                     'bordertype','square',...
-									'callback',{{@conn,'gui_help','doc'},{@conn,'gui_help','url','https://www.conn-toolbox.org/resources'},{@conn,'gui_help','url','https://www.conn-toolbox.org/support'}} );
+									'callback',{{@conn,'gui_help','doc'},{@conn,'gui_help','url','https://www.conn-toolbox.org/resources'},{@conn,'gui_help','url','https://www.conn-toolbox.org/resources/support'}} );
 	CONN_h.menus.m_setup_07b=conn_menumanager([],	'n',6,...
 									'string',{'Search by topic','Documentation & Support', 'Tutorials', 'Training', 'Newsletter','About CONN'},...
 									'help',{'Search for topics in a database of support questions','Access CONN documentation and user-support resources','Visit online tutorials', 'Learn about online and in-person courses', 'Register to receive CONN''s Monthly newsletter', 'Information about this CONN version'},...
@@ -6902,6 +6902,7 @@ else
                 if ~isfield(CONN_x.Preproc,'qa'), CONN_x.Preproc.qa=struct('folders',{{}},'DataValidityScore',[],'DataQualityScore',[],'DataSensitivityScore',[]); end
                 if ~isfield(CONN_x.Preproc.qa,'selections1'), CONN_x.Preproc.qa.selections1{1}={'QC_ValidSubjects'}; end
                 if ~isfield(CONN_x.Preproc.qa,'selections2'), CONN_x.Preproc.qa.selections2{1}={'QC_ValidSubjects'}; CONN_x.Preproc.qa.selections2{2}={}; end
+                if numel(CONN_x.Preproc.qa.selections2)<2, CONN_x.Preproc.qa.selections2{2}={}; end
                 if ~isfield(CONN_x.Preproc.qa,'selections3'), CONN_x.Preproc.qa.selections3{1}={}; end
                 CONN_h.menus.m_preproc_00{41}=uicontrol('style','text','units','norm','position',boffset+[.05,.26,.14,.05],'string',{'Data Validity score (0-100):','Removal of biases in FC measures'},'backgroundcolor',CONN_gui.backgroundcolorA,'foregroundcolor',CONN_gui.fontcolor,'fontsize',8+CONN_gui.font_offset,'horizontalalignment','center','parent',CONN_h.screen.hfig);
                 %CONN_h.menus.m_preproc_00{42}=uicontrol('style','text','units','norm','position',boffset+[.05,.22,.14,.04],'string','?','backgroundcolor',CONN_gui.backgroundcolorA,'foregroundcolor',CONN_gui.fontcolorA,'fontsize',15+CONN_gui.font_offset,'tooltipstring',conn_menu_formathtml('<HTML>Data Validity score<br/><br/> This score measures how far the peak of the FC distribution is away from zero (its expected value in the absence of global biases)<br/><br/> Score values above 95% (approximately peak displacements below 5% SD) are considered ideal / indicative of high-quality functional data<br/><br/> Data Validity scores are computed as 100*exp(-|a/b|) where a is the average peak (mode) location and b is the average width (normalized interquartile range) of the distribution of functional connectivity values for each subject</HTML>'));
@@ -7580,7 +7581,8 @@ else
                     conn_qascores('DataSensitivity', [], updateqaplots_subjects, updateqaplots_QC_variables, [], updateqaplots_exclude);
                 end
                 try
-                    if conn_existfile(fullfile(CONN_x.Preproc.qa.folders{3},'DataSensitivityScore.mat'))
+                    if numel(CONN_x.Preproc.qa.folders)<3, CONN_x.Preproc.qa.folders{3}=[]; 
+                    elseif conn_existfile(fullfile(CONN_x.Preproc.qa.folders{3},'DataSensitivityScore.mat'))
                         results=conn_loadmatfile(fullfile(CONN_x.Preproc.qa.folders{3},'DataSensitivityScore.mat'));
                         if all(abs(CONN_x.Preproc.qa.DataSensitivityScore-results.DataSensitivityScore)<1e-8)
                             if results.DataSensitivityScore>=.95, set(CONN_h.menus.m_preproc_00{48},'string',sprintf('%s%% %c  n=%d',mat2str(100*results.DataSensitivityScore,3),marks(2),results.Nsubjects));
@@ -7603,7 +7605,8 @@ else
                     conn_qascores('DataValidity', [], updateqaplots_subjects);
                 end
                 try
-                    if conn_existfile(fullfile(CONN_x.Preproc.qa.folders{1},'DataValidityScore.mat'))
+                    if numel(CONN_x.Preproc.qa.folders)<1, CONN_x.Preproc.qa.folders{1}=[];
+                    elseif conn_existfile(fullfile(CONN_x.Preproc.qa.folders{1},'DataValidityScore.mat'))
                         results=conn_loadmatfile(fullfile(CONN_x.Preproc.qa.folders{1},'DataValidityScore.mat'));
                         if all(abs(CONN_x.Preproc.qa.DataValidityScore-results.DataValidityScore)<1e-8)
                             if results.DataValidityScore>=.95, set(CONN_h.menus.m_preproc_00{42},'string',sprintf('%s%% %c',mat2str(100*results.DataValidityScore,3),marks(2)));
@@ -7619,7 +7622,8 @@ else
                     conn_qascores('DataQuality', [], updateqaplots_subjects, updateqaplots_QC_variables, updateqaplots_Control_variables);
                 end
                 try
-                    if conn_existfile(fullfile(CONN_x.Preproc.qa.folders{2},'DataQualityScore.mat'))
+                    if numel(CONN_x.Preproc.qa.folders)<2, CONN_x.Preproc.qa.folders{2}=[]; 
+                    elseif conn_existfile(fullfile(CONN_x.Preproc.qa.folders{2},'DataQualityScore.mat'))
                         results=conn_loadmatfile(fullfile(CONN_x.Preproc.qa.folders{2},'DataQualityScore.mat'));
                         if all(abs(CONN_x.Preproc.qa.DataQualityScore-results.DataQualityScore)<1e-8)
                             if results.DataQualityScore>=.95, set(CONN_h.menus.m_preproc_00{45},'string',sprintf('%s%% %c',mat2str(100*min(results.DataQualityScore),3),marks(2)));
@@ -7631,21 +7635,21 @@ else
                 end
             end
             testoptions=rmfield(CONN_x.Preproc,{'variables','qa'});
-            if ~isempty(CONN_x.Preproc.qa.folders{1})&&isfield(CONN_x.Preproc.qa,'options1')&&isequal(testoptions,CONN_x.Preproc.qa.options1), 
+            if numel(CONN_x.Preproc.qa.folders)>=1&&~isempty(CONN_x.Preproc.qa.folders{1})&&isfield(CONN_x.Preproc.qa,'options1')&&isequal(testoptions,CONN_x.Preproc.qa.options1), 
                 set([CONN_h.menus.m_preproc_00{42},CONN_h.menus.m_preproc_00{43}],'foregroundcolor',CONN_gui.fontcolorA);
                 set(CONN_h.menus.m_preproc_00{51},'backgroundcolor',CONN_gui.backgroundcolorA,'string',sprintf('DV score is up to date (%s)',regexprep(CONN_x.Preproc.qa.folders{1},{'^.*_GUIrequest_[^_]*_','_'},{'','-'})));
             else 
                 set([CONN_h.menus.m_preproc_00{42},CONN_h.menus.m_preproc_00{43}],'foregroundcolor',.45*CONN_gui.fontcolorA+.55*CONN_gui.backgroundcolorA);
                 set(CONN_h.menus.m_preproc_00{51},'backgroundcolor',CONN_gui.backgroundcolorE,'string','DV score outdated. Recompute now'); %sprintf('%c Recompute DV score (not up to date)',marks(3)));
             end
-            if ~isempty(CONN_x.Preproc.qa.folders{2})&&isfield(CONN_x.Preproc.qa,'options2')&&isequal(testoptions,CONN_x.Preproc.qa.options2), 
+            if numel(CONN_x.Preproc.qa.folders)>=2&&~isempty(CONN_x.Preproc.qa.folders{2})&&isfield(CONN_x.Preproc.qa,'options2')&&isequal(testoptions,CONN_x.Preproc.qa.options2), 
                 set([CONN_h.menus.m_preproc_00{45},CONN_h.menus.m_preproc_00{46}],'foregroundcolor',CONN_gui.fontcolorA);
                 set(CONN_h.menus.m_preproc_00{52},'backgroundcolor',CONN_gui.backgroundcolorA,'string',sprintf('DQ score is up to date (%s)',regexprep(CONN_x.Preproc.qa.folders{2},{'^.*_GUIrequest_[^_]*_','_'},{'','-'})));
             else 
                 set([CONN_h.menus.m_preproc_00{45},CONN_h.menus.m_preproc_00{46}],'foregroundcolor',.45*CONN_gui.fontcolorA+.55*CONN_gui.backgroundcolorA);
                 set(CONN_h.menus.m_preproc_00{52},'backgroundcolor',CONN_gui.backgroundcolorE,'string','DQ score outdated. Recompute now'); %sprintf('%c Recompute DQ score (not up to date)',marks(3)));
             end
-            if ~isempty(CONN_x.Preproc.qa.folders{3})&&isfield(CONN_x.Preproc.qa,'options3')&&isequal(testoptions,CONN_x.Preproc.qa.options3), 
+            if numel(CONN_x.Preproc.qa.folders)>=3&&~isempty(CONN_x.Preproc.qa.folders{3})&&isfield(CONN_x.Preproc.qa,'options3')&&isequal(testoptions,CONN_x.Preproc.qa.options3), 
                 set([CONN_h.menus.m_preproc_00{48},CONN_h.menus.m_preproc_00{49}],'foregroundcolor',CONN_gui.fontcolorA);
                 set(CONN_h.menus.m_preproc_00{53},'backgroundcolor',CONN_gui.backgroundcolorA,'string',sprintf('DS score is up to date (%s)',regexprep(CONN_x.Preproc.qa.folders{3},{'^.*_GUIrequest_[^_]*_','_'},{'','-'})));
             else 

@@ -830,8 +830,14 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                     dof2=sum(dof2all);
                     if any(ismember(procedures,[11,14,16,31])) % FC histogram and scatterplot
                         z0=corrcoef(x0);z1=corrcoef(x1);d0=shiftdim(sqrt(sum(abs(conn_bsxfun(@minus, xyz,permute(xyz,[1,3,2]))).^2,1)),1);
+                        blocks=floor((0:size(x0,1)-1)/size(x0,1)*2); % first-half vs. last half of time*conditions
+                        %blocks=0:size(x0,1)-1;                      % even vs. odd of time*conditions
+                        z1odd=corrcoef(x1(rem(blocks,2)==1,:)); z1even=corrcoef(x1(rem(blocks,2)==0,:)); 
+                        %z0odd=corrcoef(x0(rem(blocks,2)==1,:)); z0even=corrcoef(x0(rem(blocks,2)==0,:));
                         maskz=z0~=1&z1~=1;
                         z0=z0(maskz);z1=z1(maskz);d0=d0(maskz);
+                        z1odd=z1odd(maskz);z1even=z1even(maskz);
+                        %z0odd=z0odd(maskz);z0even=z0even(maskz);
                         [a0,b0]=hist(z0(:),linspace(-1,1,NptsHist));[a1,b1]=hist(z1(:),linspace(-1,1,NptsHist));
                         [peakz0,peakf0]=findpeak(a0,b0); [peakz1,peakf1]=findpeak(a1,b1);                         
                         pdf0=a0(ceil(NptsHist/2))/peakf0; pdf1=a1(ceil(NptsHist/2))/peakf1;
@@ -882,7 +888,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Effective degrees of freedom after denoising (quality control: higher values are better)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -895,7 +901,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Effective degrees of freedom after denoising (estimated using Welch-Satterthwaite approximation)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -908,7 +914,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Mode of Functional Connectivity distribution (peak r coefficient) after denoising (quality control: values should be close to zero)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -921,7 +927,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: InterQuartile Range of Functional Connectivity distribution after denoising (quality control: values should be similar across all subjects)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -934,7 +940,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                         %     CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Functional Connectivity distribution centering (PDF(r=0)/PDF(r=peak) probability density ratio) after denoising (quality control: values should be close to 1)';
                         %     CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                         %     for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        % elseif isub==1,
+                        % elseif isub==1&&any(ismember(procedures,[16,31])),
                         %     for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         % end
                         % CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -947,7 +953,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Mean of Functional Connectivity distribution after denoising (quality control: values should be small and positive)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
@@ -960,11 +966,25 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
                             CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Standard deviation of Functional Connectivity distribution after denoising (quality control: values should be similar across all subjects)';
                             CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
-                        elseif isub==1,
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
                             for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
                         end
                         CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
-                        if ~donemsg, conn_disp('fprintf','QC_DOF, QC_PeakFC, QC_IqrFC, QC_MeanFC, and QC_StdFC 2nd-level covariates updated\n'); donemsg=true; end
+                        pmatch=1-mean(abs(z1odd-z1even).^2)/var(z1odd+z1even,1);
+                        %disp([1-mean(abs(z0odd-z0even).^2)/var((z0odd+z0even)/2,1)/4, pmatch]);
+                        pmatch_name='QC_IccFC';
+                        pmatch_icov=find(strcmp(pmatch_name,CONN_x.Setup.l2covariates.names(1:end-1)),1);
+                        if isempty(pmatch_icov),
+                            pmatch_icov=numel(CONN_x.Setup.l2covariates.names);
+                            CONN_x.Setup.l2covariates.names{pmatch_icov}=pmatch_name;
+                            CONN_x.Setup.l2covariates.descrip{pmatch_icov}='CONN Quality Assurance: Reliability of Functional Connectivity measures after denoising (intraclass correlation ICC(1,k) with half-split of functional data; quality control: values should be high)';
+                            CONN_x.Setup.l2covariates.names{pmatch_icov+1}=' ';
+                            for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
+                        elseif isub==1&&any(ismember(procedures,[16,31])),
+                            for tnsub=1:CONN_x.Setup.nsubjects, CONN_x.Setup.l2covariates.values{tnsub}{pmatch_icov}=nan; end
+                        end
+                        CONN_x.Setup.l2covariates.values{nsub}{pmatch_icov}=pmatch;
+                        if ~donemsg, conn_disp('fprintf','QC_DOF, QC_PeakFC, QC_IqrFC, QC_MeanFC, QC_StdFC, and QC_IccFC 2nd-level covariates updated\n'); donemsg=true; end
                     end
                     if any(ismember(procedures,[13,15])) % QC-FC
                         if numel(k)~=numel(x0valid)
@@ -1006,6 +1026,7 @@ if any(ismember(procedures,Iprocedure)) % QA_DENOISE
     %catch
     %   conn_disp('fprintf','warning: unable to create QA_DENOISE plot \n %s \n',conn_qaplots_singleline(lasterr));
     %end
+
     if any(ismember(procedures,[13,15])) % FC-QC
         [x,xnames,xdescr]=conn_module('get','l2covariates');
         x=x(nsubs,:);

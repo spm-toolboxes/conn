@@ -1161,12 +1161,12 @@ if dlg.createreport, conn_qaplotsexplore_update([],[],'printset','nogui'); conn_
                             if ~isequal(tx0,dlg.results_info{n}.InterquartilesDisplay)
                                 tx0=dlg.results_info{n}.InterquartilesDisplay;
                                 tx=[2*tx0(1,:)-tx0(2,:); tx0; 2*tx0(end,:)-tx0(end-1,:)];
-                                ht(1)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(1,[1 1:end end]),'r:','linewidth',1,'parent',dlg.handles.hax,'color',[.5 0 0]);
+                                ht(1)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(1,[1 1:end end]),'r--','linewidth',1,'parent',dlg.handles.hax,'color',[.5 0 0]);
                                 ht(2)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(2,[1 1:end end]),'r--','linewidth',2,'parent',dlg.handles.hax);
                                 ht(3)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(3,[1 1:end end]),'k:','linewidth',1,'parent',dlg.handles.hax);
                                 ht(4)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(5,[1 1:end end]),'k:','linewidth',1,'parent',dlg.handles.hax);
                                 ht(5)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(6,[1 1:end end]),'r--','linewidth',2,'parent',dlg.handles.hax);
-                                ht(6)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(7,[1 1:end end]),'r:','linewidth',1,'parent',dlg.handles.hax,'color',[.5 0 0]);
+                                ht(6)=plot([.5 1:size(tx,2) size(tx,2)+.5],tx(7,[1 1:end end]),'r--','linewidth',1,'parent',dlg.handles.hax,'color',[.5 0 0]);
                                 text(size(tx,2)+.55+zeros(1,6),tx([7,6,5,3,2,1],end)',{'3rd Q + 3 IQR','3rd Q + 1.5 IQR','3rd Quartile','1st Quartile','1st Q - 1.5 IQR','1st Q - 3 IQR'},'horizontalalignment','left','fontsize',5+font_offset,'parent',dlg.handles.hax);
                                 text(ones(1,4)-.55,tx([7,7,1,1],end)'+[.02,-.02,.02,-.02],{'extreme outliers','mild outliers','mild outliers','extreme outliers'},'horizontalalignment','right','color',.5*[1 1 1],'fontsize',5+font_offset,'parent',dlg.handles.hax);
                                 if numel(dlg.results_info{n}.Variables)>1,
