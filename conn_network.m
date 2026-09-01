@@ -133,8 +133,21 @@ if nargin<5||isempty(thr),
             if n1==1, legend([h1,h2],{'Data','Random graph','Lattice'}); end
         end
         h=subplot(1,2,2); set(h,'position',get(h,'position')*[1 0 0 0; 0 1 0 0; 0 0 1 0; 0 .25 0 .5]);
-        mnet_d_1=mnet_d-mean(x0{1}{2},1); %title('Difference with lattice')
-        mnet_d_2=mnet_d-mean(x0{n1}{1},1); %title('Difference with random');
+        if 0 % fixed bug in right summary plot
+            mnet_d_1=mnet_d-mean(x0{1}{2},1); %title('Difference with lattice')
+            mnet_d_2=mnet_d-mean(x0{n1}{1},1); %title('Difference with random');
+            mnet_d_prev=mnet_d_1+mnet_d_2; title('GE_{data}-GE_{lattice} + LE_{data}-LE_{random}');
+            snet_d_1=std(x{1},0,1);
+            snet_d_2=std(x{2},0,1);
+            snet_d=sqrt(snet_d_1.^2+snet_d_2.^2);
+            hold on;
+            h=patch([thr,fliplr(thr)],[mnet_d_prev+2*snet_d,fliplr(mnet_d_prev-2*snet_d)],'r');
+            set(h,'facecolor',.75*[1,0,0],'edgecolor','none');
+            h1=plot(thr,mnet_d_prev,'r-','linewidth',2);
+            hold off;
+        end
+        mnet_d_1=mean(x{1},1)-mean(x0{1}{2},1); %title('Difference with lattice')
+        mnet_d_2=mean(x{2},1)-mean(x0{2}{1},1); %title('Difference with random');
         mnet_d=mnet_d_1+mnet_d_2; title('GE_{data}-GE_{lattice} + LE_{data}-LE_{random}');
         snet_d_1=std(x{1},0,1);
         snet_d_2=std(x{2},0,1);
@@ -151,7 +164,7 @@ if nargin<5||isempty(thr),
         h1=plot(thr,mnet_d,'k-','linewidth',2);
         hold off;
         set(gcf,'color','w');set(gca,'fontsize',16,'xcolor',.75*[1,1,1],'ycolor',.75*[1,1,1]);
-        %ylabel(xlabels{n1});
+            %ylabel(xlabels{n1});
         xlabel(ylabels{1});
         
         %clf; plot(mean(x{1},1)-x0{1}{2},mean(x{2},1)-x0{2}{1},'.-'); text(mean(x{1},1)-x0{1}{2},mean(x{2},1)-x0{2}{1},arrayfun(@(x)num2str(x,'%.2f'),thr,'uni',0)); hold off;
